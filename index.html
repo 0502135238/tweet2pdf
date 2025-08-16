@@ -8,11 +8,13 @@
   <style>
     body { font-family: 'Inter', sans-serif; background: #f9fafb; text-align: center; padding: 50px; }
     h1 { color: #4f46e5; margin-bottom: 20px; }
-    input { width: 60%; padding: 12px; font-size: 1rem; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ccc; }
+    input { width: 90%; max-width: 500px; padding: 12px; font-size: 1rem; margin-bottom: 20px; border-radius: 8px; border: 1px solid #ccc; }
     button { padding: 12px 30px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; }
     button:hover { background: #3b82f6; }
+    button:disabled { background: #a5b4fc; cursor: not-allowed; }
     #status { margin-top: 20px; font-weight: 600; color: #111827; }
-    #download { display: none; margin-top: 20px; }
+    #download { display: none; margin-top: 20px; padding: 10px 20px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; }
+    #download:hover { background: #059669; }
   </style>
 </head>
 <body>
@@ -22,27 +24,26 @@
   
   <input type="text" id="threadUrl" placeholder="Paste thread URL here..." />
   <br>
-  <button onclick="generatePDF()">Generate PDF</button>
+  <button id="generateBtn">Generate PDF</button>
 
   <div id="status"></div>
   <a id="download" href="#" download="thread.pdf">Download PDF</a>
 
 <script>
-async function generatePDF() {
-  const url = document.getElementById('threadUrl').value.trim();
-  const status = document.getElementById('status');
-  const download = document.getElementById('download');
+const button = document.getElementById('generateBtn');
+const status = document.getElementById('status');
+const download = document.getElementById('download');
+const input = document.getElementById('threadUrl');
 
-  if (!url) {
-    alert('Please paste a thread URL');
-    return;
-  }
+button.addEventListener('click', async () => {
+  const url = input.value.trim();
+  if (!url) { alert('Please paste a thread URL'); return; }
 
   status.textContent = 'Generating PDF...';
   download.style.display = 'none';
+  button.disabled = true;
 
   try {
-    // Await the fetch and store the response
     const response = await fetch('https://tweet2pdf-production.up.railway.app/generate-pdf', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,11 +58,14 @@ async function generatePDF() {
     download.href = blobUrl;
     download.style.display = 'inline-block';
     status.textContent = 'PDF is ready!';
+
   } catch (err) {
     console.error(err);
     status.textContent = 'Error generating PDF. Make sure the thread URL is valid.';
+  } finally {
+    button.disabled = false;
   }
-}
+});
 </script>
 
 </body>
