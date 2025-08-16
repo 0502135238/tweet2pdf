@@ -42,10 +42,10 @@ async function generatePDF() {
   download.style.display = 'none';
 
   try {
-    const response = await fetch('http://localhost:3000/generate-pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ threadUrl: url }),
+    fetch('https://tweet2pdf-production.up.railway.app/generate-pdf', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ threadUrl: url }),
     });
 
     if (!response.ok) throw new Error('Failed to generate PDF');
